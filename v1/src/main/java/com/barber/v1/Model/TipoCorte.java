@@ -20,7 +20,5 @@ public class TipoCorte {
 
     @Column(nullable = false)
     private Double precio;
-
-    @Column(nullable = false)
-    private Integer duracion; //en minutos
+    
 }

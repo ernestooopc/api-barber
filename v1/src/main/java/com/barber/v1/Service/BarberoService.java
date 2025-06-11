@@ -13,7 +13,7 @@ public interface BarberoService {
     List<Barbero> listBarberos();
     Optional<Barbero> findById(Long id);
 
-    boolean existsDni(String dni);
+    boolean existsCorreo(String dni);
 
 
 }

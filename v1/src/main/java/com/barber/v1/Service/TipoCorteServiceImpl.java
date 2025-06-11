@@ -44,7 +44,6 @@ public class TipoCorteServiceImpl implements TipoCorteService{
                     tcExistente.setNombre(tipoCorteActualizado.getNombre());
                     tcExistente.setDescripcion(tipoCorteActualizado.getDescripcion());
                     tcExistente.setPrecio(tipoCorteActualizado.getPrecio());
-                    tcExistente.setDuracion(tipoCorteActualizado.getDuracion());
                     return tipoCorteRepository.save(tcExistente);
                 })
                 .orElseThrow(() -> new RuntimeException("Tipo de corte no encontrado con id: " + id));

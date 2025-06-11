@@ -40,8 +40,12 @@ public class BarberoServiceImpl implements BarberoService{
         return barberoRepository.findById(id)
             .map(barberoExistente -> {
                 barberoExistente.setNombre(barberoUpdate.getNombre());
-                barberoExistente.setDni(barberoUpdate.getDni());
-                barberoExistente.setExperienciaLaboral(barberoUpdate.getExperienciaLaboral());
+                barberoExistente.setApellido(barberoUpdate.getApellido());
+                barberoExistente.setCorreo(barberoUpdate.getCorreo());
+                barberoExistente.setTelefono(barberoUpdate.getTelefono());
+                barberoExistente.setExperienciaAnios(barberoUpdate.getExperienciaAnios());
+                barberoExistente.setEspecialidad(barberoUpdate.getEspecialidad());
+                barberoExistente.setFechaIngreso(barberoUpdate.getFechaIngreso());
                 return barberoRepository.save(barberoExistente);
             })
             .orElseThrow(() -> new RuntimeException("Barbero no encontrado con ID: " + id));
@@ -56,8 +60,8 @@ public class BarberoServiceImpl implements BarberoService{
 
 
     @Override
-    public boolean existsDni(String dni) {
-        return barberoRepository.existsByDni(dni);
+    public boolean existsCorreo(String dni) {
+        return barberoRepository.existsByCorreo(dni);
     }
 
 }

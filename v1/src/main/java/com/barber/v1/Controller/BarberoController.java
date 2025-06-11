@@ -33,8 +33,8 @@ public class BarberoController {
 
     @PostMapping
     public ResponseEntity<?>createBarbero(@RequestBody Barbero barbero){
-        if(barberoService.existsDni(barbero.getDni())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("DNI Ya Registrado");
+        if(barberoService.existsCorreo(barbero.getCorreo())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Correo Ya Registrado");
         }
         Barbero newBarbero = barberoService.createBarbero(barbero);
         return ResponseEntity.status(HttpStatus.CREATED).body(newBarbero);

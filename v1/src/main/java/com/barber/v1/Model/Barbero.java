@@ -1,5 +1,7 @@
 package com.barber.v1.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,10 +18,19 @@ public class Barbero {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    private String apellido;
+
     @Column(unique = true, nullable = false)
-    private String dni;
+    private String correo;
 
     @Column(nullable = false)
-    private String experienciaLaboral;
+    private String telefono;
 
+    @Column(nullable = false)
+    private Integer experienciaAnios;
+
+    private String especialidad; 
+
+    private LocalDateTime fechaIngreso = LocalDateTime.now();
 }
