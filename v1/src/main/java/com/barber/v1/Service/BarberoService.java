@@ -12,7 +12,7 @@ public interface BarberoService {
     void deleteBarbero(Long id);
     List<Barbero> listBarberos();
     Optional<Barbero> findById(Long id);
-
+    Barbero obtenerPorId(Long id);
     boolean existsCorreo(String dni);
 
 

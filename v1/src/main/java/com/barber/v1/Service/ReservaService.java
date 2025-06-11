@@ -18,5 +18,6 @@ public interface ReservaService {
     List<Reserva> findByStatus(Reserva.Estado status);
     List<Reserva> findBetweenDates(LocalDateTime from, LocalDateTime to);
     boolean existsReservaAtDate(LocalDateTime dateTime);
-    
+    void cancelarReserva(Long reservaId);
+
 }

@@ -1,21 +1,21 @@
-package com.barber.v1.Model;
+// package com.barber.v1.Model;
 
-import jakarta.persistence.*;
-import lombok.*;
+// import jakarta.persistence.*;
+// import lombok.*;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Asignacion {
+// @Entity
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
+// public class Asignacion {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//     @Id
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//     private Long id;
 
-    @ManyToOne
-    private Reserva reserva;
+//     @ManyToOne
+//     private Reserva reserva;
 
-    @ManyToOne
-    private Barbero barbero;
-}
+//     @ManyToOne
+//     private Barbero barbero;
+// }

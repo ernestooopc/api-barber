@@ -7,7 +7,7 @@ import com.barber.v1.Model.Barbero;
 public interface BarberoRepository extends JpaRepository<Barbero,Long>{
 
 
-    boolean existsByCorreo(String dni);
+    boolean existsByCorreo(String correo);
 
 
 }

@@ -83,21 +83,24 @@ public class ReservaController {
         return reservaService.existsReservaAtDate(LocalDateTime.parse(fechaHora));
     }
 
-
     /** PATCH para cambiar sólo el estado */
     @PatchMapping("/{id}/estado")
     public ResponseEntity<Reserva> changeEstado(
-        @PathVariable Long id,
-        @RequestParam("nuevoEstado") Reserva.Estado nuevoEstado
-    ) {
+            @PathVariable Long id,
+            @RequestParam("nuevoEstado") Reserva.Estado nuevoEstado) {
         return reservaService.findById(id)
-            .map(r -> {
-                r.setEstado(nuevoEstado);
-                Reserva saved = reservaService.updateReserva(id, r);
-                return ResponseEntity.ok(saved);
-            })
-            .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(r -> {
+                    r.setEstado(nuevoEstado);
+                    Reserva saved = reservaService.updateReserva(id, r);
+                    return ResponseEntity.ok(saved);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<String> cancelarReserva(@PathVariable Long id) {
+        reservaService.cancelarReserva(id);
+        return ResponseEntity.ok("Reserva cancelada exitosamente.");
+    }
+
 }

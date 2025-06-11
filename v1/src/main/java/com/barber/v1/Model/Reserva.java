@@ -31,4 +31,9 @@ public class Reserva {
     public enum Estado {
         PENDIENTE, CANCELADA, COMPLETADA
     }
+    
+    @ManyToOne
+    @JoinColumn(name = "barbero_id", nullable = false)
+    private Barbero barbero;
+    
 }
