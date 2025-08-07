@@ -60,6 +60,7 @@ public class TipoCorteServiceImpl implements TipoCorteService{
                     tcExistente.setNombre(tipoCorteActualizado.getNombre());
                     tcExistente.setDescripcion(tipoCorteActualizado.getDescripcion());
                     tcExistente.setPrecio(tipoCorteActualizado.getPrecio());
+                    tcExistente.setDuracion(tipoCorteActualizado.getDuracion());
                     Long categoriaId = tcExistente.getCategoria().getId();
                     Categoria categoria = categoriaRepository.findById(categoriaId)
                     .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));

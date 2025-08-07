@@ -21,6 +21,9 @@ public class TipoCorte {
     @Column(nullable = false)
     private Double precio;
 
+    @Column(nullable = false)
+    private Double duracion;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;

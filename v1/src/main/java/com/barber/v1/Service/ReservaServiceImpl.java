@@ -1,5 +1,6 @@
 package com.barber.v1.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -43,7 +44,6 @@ public class ReservaServiceImpl implements ReservaService {
 
         horario.setReservado(true);
         horarioDisponibleRepository.save(horario);
-        
 
         return reservaRepository.save(reserva);
     }
@@ -100,26 +100,31 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     @Transactional
-public void cancelarReserva(Long reservaId) {
-    Reserva reserva = reservaRepository.findById(reservaId)
-            .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+    public void cancelarReserva(Long reservaId) {
+        Reserva reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-    LocalDate fecha = reserva.getFechaHora().toLocalDate();
-    LocalTime hora = reserva.getFechaHora().toLocalTime();
+        // 1) Validar plazo de 24 horas
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime cita = reserva.getFechaHora();
+        long horasRestantes = Duration.between(ahora, cita).toHours();
+        if (horasRestantes < 24) {
+            throw new RuntimeException("Solo puedes cancelar hasta 24 horas antes de la cita");
+        }
 
-    HorarioDisponible horario = horarioDisponibleRepository
-            .findByBarberoAndFechaAndHora(reserva.getBarbero(), fecha, hora)
-            .orElseThrow(() -> new IllegalStateException("HORARIO_OCUPADO"));
+        // 2) Liberar el horario
+        LocalDate fecha = cita.toLocalDate();
+        LocalTime hora = cita.toLocalTime();
+        HorarioDisponible horario = horarioDisponibleRepository
+                .findByBarberoAndFechaAndHora(reserva.getBarbero(), fecha, hora)
+                .orElseThrow(() -> new IllegalStateException("HORARIO_OCUPADO"));
 
+        horario.setReservado(false);
+        horarioDisponibleRepository.save(horario);
 
-    // Liberar el horario
-    horario.setReservado(false);
-    horarioDisponibleRepository.save(horario);
-
-    // Marcar reserva como cancelada
-    reserva.setEstado(Reserva.Estado.CANCELADA);
-    reservaRepository.save(reserva);
-}
-
+        // 3) Marcar reserva como cancelada
+        reserva.setEstado(Reserva.Estado.CANCELADA);
+        reservaRepository.save(reserva);
+    }
 
 }

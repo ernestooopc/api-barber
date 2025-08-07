@@ -29,7 +29,7 @@ public class Reserva {
     //Enumerated ayuda que el estado solo puede ser uno de estos 3
 
     public enum Estado {
-        PENDIENTE, CANCELADA, COMPLETADA
+        PENDIENTE, CANCELADA, COMPLETADA, PAGADO
     }
     
     @ManyToOne

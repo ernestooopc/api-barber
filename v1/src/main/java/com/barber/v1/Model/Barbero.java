@@ -1,6 +1,6 @@
 package com.barber.v1.Model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +30,14 @@ public class Barbero {
     @Column(nullable = false)
     private Integer experienciaAnios;
 
-    private String especialidad; 
+    private String especialidad;
 
-    private LocalDateTime fechaIngreso = LocalDateTime.now();
+    private LocalDate fechaIngreso;
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaIngreso == null) {
+            fechaIngreso = LocalDate.now();
+        }
+    }
 }

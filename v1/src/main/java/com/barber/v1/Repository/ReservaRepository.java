@@ -17,5 +17,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     boolean existsByUsuarioIdAndFechaHora(Long usuarioId, LocalDateTime fechaHora);
     @Query("SELECT r FROM Reserva r WHERE r.barbero.id = :barberoId AND DATE(r.fechaHora) = :fecha")
     List<Reserva> findByBarberoAndFecha(@Param("barberoId") Long barberoId, @Param("fecha") LocalDate fecha);
+    List<Reserva> findByEstadoAndFechaHoraBefore(Reserva.Estado estado, LocalDateTime fechaHora);    
+    List<Reserva> findByEstadoInAndFechaHoraBefore(
+    List<Reserva.Estado> estados, 
+    LocalDateTime fechaHora
+);
 
 }
