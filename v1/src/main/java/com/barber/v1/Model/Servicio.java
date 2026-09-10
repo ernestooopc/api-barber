@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TipoCorte {
+public class Servicio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +22,10 @@ public class TipoCorte {
     private Double precio;
 
     @Column(nullable = false)
-    private Double duracion;
+    private Integer duracionMinutos;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
-    private Categoria categoria;
+    private CategoriaServicio categoria;
     
 }

@@ -29,23 +29,30 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena;
 
- 
-
     private Boolean activo = true;
 
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
-    @Enumerated(EnumType.STRING)
-    private Rol rol = Rol.USUARIO;   
+    @Column(nullable = false)
+    private Integer visitasTotales = 0;
 
     @Enumerated(EnumType.STRING)
-    private TipoCliente tipoCliente = TipoCliente.NUEVO;
+    private Rol rol = Rol.CLIENTE;   
 
+    @Enumerated(EnumType.STRING)
+    private NivelLealtad nivelLealtad = NivelLealtad.CLASICO;
+
+
+
+
+    private Boolean requiereCambioContrasena = false;
     public enum Rol {
-        USUARIO, ADMIN
+        CLIENTE, ADMIN, BARBERO
     }
 
-    public enum TipoCliente {
-        NUEVO, FRECUENTE
+    public enum NivelLealtad {
+        CLASICO, // Nivel inicial (0 a 9 visitas)
+        ORO,     // Nivel intermedio (10 a 24 visitas)
+        BLACK    // Nivel máximo (25+ visitas)
     }
 }

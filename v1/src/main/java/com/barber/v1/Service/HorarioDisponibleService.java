@@ -1,7 +1,7 @@
 package com.barber.v1.Service;
 
 import com.barber.v1.Model.HorarioDisponible;
-import com.barber.v1.Model.Barbero;
+import com.barber.v1.Model.HorarioRangoRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,9 +11,11 @@ public interface HorarioDisponibleService {
 
     List<HorarioDisponible> obtenerHorariosDisponibles(LocalDate fecha);
 
-    List<HorarioDisponible> obtenerHorariosPorBarberoYFecha(Barbero barbero, LocalDate fecha);
+    List<HorarioDisponible> obtenerHorariosPorBarberoYFecha(Long barberoId, LocalDate fecha);
 
-    HorarioDisponible crearHorario(Barbero barbero, LocalDate fecha, LocalTime hora);
+    HorarioDisponible crearHorario(Long barberoId, LocalDate fecha, LocalTime hora);
 
-    boolean existeHorario(Barbero barbero, LocalDate fecha, LocalTime hora);
+    boolean existeHorario(Long barberoId, LocalDate fecha, LocalTime hora);
+
+    void generarBloquesDeHorario(HorarioRangoRequest request);
 }

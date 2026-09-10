@@ -1,20 +1,20 @@
-package com.barber.v1.Service;
-
+package com.barber.v1.Service.impl;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.barber.v1.Model.Barbero;
+import com.barber.v1.Model.Usuario;
 import com.barber.v1.Repository.BarberoRepository;
 
+import com.barber.v1.Service.BarberoService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import jakarta.transaction.Transactional;
 @Service
 public class BarberoServiceImpl implements BarberoService {
 
     private final BarberoRepository barberoRepository;
 
-    @Autowired
     public BarberoServiceImpl(BarberoRepository barberoRepository) {
         this.barberoRepository = barberoRepository;
     }
@@ -30,12 +30,27 @@ public class BarberoServiceImpl implements BarberoService {
     }
 
     @Override
-    public Barbero createBarbero(Barbero barbero) {
-        return barberoRepository.save(barbero);
-    }
+    @Transactional
+    public Barbero registrarBarbero(Barbero barbero) { 
+    String contrasenaTemporal = com.barber.v1.Security.PasswordUtils.generarContrasenaTemporal(barbero.getNombre());
+    
+    // 2. Cifrado fuerte
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    
+    barbero.getUsuario().setContrasena(encoder.encode(contrasenaTemporal));
+    barbero.getUsuario().setRol(Usuario.Rol.BARBERO);
+    barbero.getUsuario().setActivo(true);
+    barbero.getUsuario().setRequiereCambioContrasena(true);
+    
+    Barbero barberoGuardado = barberoRepository.save(barbero);
+    
+    //envio de correo contraseña pendiente
+    
+    return barberoGuardado;
+}
 
     @Override
-    public Barbero updateBarbero(Long id, Barbero barberoUpdate) {
+    public Barbero actualizarBarbero(Long id, Barbero barberoUpdate) {
         return barberoRepository.findById(id)
                 .map(barberoExistente -> {
                     barberoExistente.setNombre(barberoUpdate.getNombre());
@@ -51,19 +66,23 @@ public class BarberoServiceImpl implements BarberoService {
     }
 
     @Override
-    public void deleteBarbero(Long id) {
-        barberoRepository.deleteById(id);
+    public void desactivarBarbero(Long id) {
+        barberoRepository.findById(id).ifPresent(barbero -> {
+            barbero.getUsuario().setActivo(false);
+            barberoRepository.save(barbero);
+        });
     }
 
     @Override
-    public boolean existsCorreo(String dni) {
-        return barberoRepository.existsByCorreo(dni);
+    public boolean existsByCorreo(String correo) {
+        return barberoRepository.existsByCorreo(correo);
     }
 
     @Override
-    public Barbero obtenerPorId(Long id) {
-        return barberoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Barbero no encontrado con ID: " + id));
+    public Optional<Barbero> findByUsuarioId(Long usuarioId) {
+        return barberoRepository.findByUsuarioId(usuarioId);
     }
 
+
+ 
 }

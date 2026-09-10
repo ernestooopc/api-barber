@@ -3,9 +3,9 @@ package com.barber.v1.Controller;
 import com.barber.v1.Model.Usuario;
 import com.barber.v1.Security.JwtUtil;
 import com.barber.v1.Service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,18 +28,17 @@ public class UsuarioController {
 
     private final JwtUtil jwtUtil; // tu utilidad para generar JWT
 
-    @Autowired
     public UsuarioController(UsuarioService usuarioService, JwtUtil jwtUtil) {
         this.usuarioService = usuarioService;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping
-    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario) {
-        if (usuarioService.existsCorreo(usuario.getCorreo())) {
+    public ResponseEntity<?> registrarCliente(@RequestBody Usuario usuario) {
+        if (usuarioService.existsByCorreo(usuario.getCorreo())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Correo ya registrado");
         }
-        Usuario nuevo = usuarioService.createUsuario(usuario);
+        Usuario nuevo = usuarioService.registrarCliente(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
@@ -49,9 +48,9 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+    public ResponseEntity<String> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
         if (usuarioService.findById(id).isPresent()) {
-            usuarioService.updateUsuario(id, usuarioActualizado);
+            usuarioService.actualizarUsuario(id, usuarioActualizado);
             return ResponseEntity.ok("Usuario actualizado");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
@@ -59,10 +58,10 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<String> desactivarUsuario(@PathVariable Long id) {
         if (usuarioService.findById(id).isPresent()) {
-            usuarioService.deleteUsuario(id);
-            return ResponseEntity.ok("Usuario eliminado");
+            usuarioService.desactivarUsuario(id);
+            return ResponseEntity.ok("Usuario desactivado");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
@@ -73,30 +72,31 @@ public class UsuarioController {
         return usuarioService.findById(id);
     }
 
-    record LoginResponse(String token, String rol, Long id) {}
-
+    record LoginResponse(String token, String rol, Long id, String nivelLealtad) {}
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
-        // 1) Recupera el Optional<Usuario>
+        public ResponseEntity<?> login(@RequestBody LoginRequest req) {
         Optional<Usuario> optUsuario = usuarioService.findByCorreo(req.correo());
 
-        // 2) Si no existe, devuelve 401
         if (optUsuario.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
 
-        // 3) Ahora sí obtienes el Usuario real
         Usuario usuario = optUsuario.get();
 
-        // 4) Verifica la contraseña
-        if (!usuario.getContrasena().equals(req.contrasena())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        // Cambiado de isActivo() a getActivo() para evitar el error de compilación
+        if (usuario.getActivo() != null && !usuario.getActivo()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("El usuario se encuentra inactivo");
         }
 
-        // 5) Genera el token y responde
-        String token = jwtUtil.generateToken(usuario.getCorreo());
-         return ResponseEntity.ok(new LoginResponse(token, usuario.getRol().name(), usuario.getId()));
-    }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (!encoder.matches(req.contrasena(), usuario.getContrasena())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
 
+        String token = jwtUtil.generateToken(usuario.getCorreo());
+        String nivel = usuario.getNivelLealtad() != null ? usuario.getNivelLealtad().name() : "CLASICO";
+
+        return ResponseEntity.ok(new LoginResponse(token, usuario.getRol().name(), usuario.getId(), nivel));
+    }
 }

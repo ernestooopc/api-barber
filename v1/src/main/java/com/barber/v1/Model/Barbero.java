@@ -34,6 +34,11 @@ public class Barbero {
 
     private LocalDate fechaIngreso;
 
+    @OneToOne
+    @JoinColumn(name = "usuario_id", unique = true)
+    private Usuario usuario;
+
+
     @PrePersist
     public void prePersist() {
         if (fechaIngreso == null) {

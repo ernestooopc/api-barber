@@ -2,7 +2,6 @@ package com.barber.v1.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,49 +13,50 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.barber.v1.Model.TipoCorte;
-import com.barber.v1.Service.TipoCorteService;
+import com.barber.v1.Model.Servicio;
+import com.barber.v1.Service.ServicioService;
 
 
 @RestController
 @RequestMapping("/api/tipocortes")
 @CrossOrigin(origins = "http://localhost:4200")
-public class TipoCorteController {
-private final TipoCorteService tipoCorteService;
+public class ServicioController {
 
-    @Autowired
-    public TipoCorteController(TipoCorteService tipoCorteService) {
-        this.tipoCorteService = tipoCorteService;
+
+    private final ServicioService servicioService;
+
+    public ServicioController(ServicioService servicioService) {
+        this.servicioService = servicioService;
     }
 
     // Crear nuevo tipo de corte
     @PostMapping
-    public ResponseEntity<TipoCorte> create(@RequestBody TipoCorte tipoCorte) {
-        if (tipoCorteService.existsByNombre(tipoCorte.getNombre())) {
+    public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio tipoCorte) {
+        if (servicioService.existsByNombre(tipoCorte.getNombre())) {
             return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.ok(tipoCorteService.createTipoCorte(tipoCorte));
+        return ResponseEntity.ok(servicioService.crearServicio(tipoCorte));
     }
 
     // Obtener todos los tipos de corte
     @GetMapping
-    public List<TipoCorte> listAll() {
-        return tipoCorteService.listTipoCortes();
+    public List<Servicio> listAll() {
+        return servicioService.listarServicios();
     }
 
     // Buscar tipo de corte por ID
     @GetMapping("/{id}")
-    public ResponseEntity<TipoCorte> findById(@PathVariable Long id) {
-        return tipoCorteService.findById(id)
+    public ResponseEntity<Servicio> findById(@PathVariable Long id) {
+        return servicioService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // Actualizar tipo de corte
     @PutMapping("/{id}")
-    public ResponseEntity<TipoCorte> update(@PathVariable Long id, @RequestBody TipoCorte tipoCorteActualizado) {
+    public ResponseEntity<Servicio> update(@PathVariable Long id, @RequestBody Servicio servicioServiceActualizado) {
         try {
-            return ResponseEntity.ok(tipoCorteService.updateTipoCorteo(id, tipoCorteActualizado));
+            return ResponseEntity.ok(servicioService.actualizarServicio(id, servicioServiceActualizado));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -64,8 +64,8 @@ private final TipoCorteService tipoCorteService;
 
     // Eliminar tipo de corte
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        tipoCorteService.deleteTipoCorte(id);
+    public ResponseEntity<Void> eliminarServicio(@PathVariable Long id) {
+        servicioService.eliminarServicio(id);
         return ResponseEntity.ok().build();
     }
 }

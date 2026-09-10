@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class BoletaData {
     // Datos empresa
-    private String ruc = "20123456789";
-    private String razonSocial = "APPbarber SAC";
-    private String direccion = "Av. Principal 123 - Lima";
-    private String telefono = "987654321";
-    private String email = "contacto@appbarber.com";
-    private String web = "www.appbarber.com";
+    private final String ruc = "20123456789";
+    private final String razonSocial = "APPbarber SAC";
+    private final String direccion = "Av. Principal 123 - Lima";
+    private final String telefono = "987654321";
+    private final String email = "contacto@appbarber.com";
+    private final String web = "www.appbarber.com";
     private String clienteNombre;
     private String numeroBoleta;
     private LocalDateTime fechaEmision;

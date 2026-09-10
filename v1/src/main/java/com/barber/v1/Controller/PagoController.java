@@ -1,7 +1,6 @@
 package com.barber.v1.Controller;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,12 +24,16 @@ import com.stripe.model.PaymentIntent;
 
 public class PagoController {
 
-    @Autowired
-    private StripeService stripeService;
-    @Autowired
-    private BoletaService boletaService;
-    @Autowired
-    private ReservaService reservaService;
+
+    private final StripeService stripeService;
+    private final BoletaService boletaService;
+    private final ReservaService reservaService;
+
+    public PagoController(StripeService stripeService, BoletaService boletaService, ReservaService reservaService) {
+        this.stripeService = stripeService;
+        this.boletaService = boletaService;
+        this.reservaService = reservaService;
+    }
 
     @PostMapping("/crear-intento")
     public ResponseEntity<?> crearIntento(@RequestBody Map<String, Object> body) {
@@ -38,7 +41,7 @@ public class PagoController {
         Long reservaId = Long.valueOf(body.get("reservaId").toString());
         Reserva reserva = reservaService.findById(reservaId)
             .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-        double precio = reserva.getTipoCorte().getPrecio();
+        double precio = reserva.getServicio().getPrecio();
         long montoEnCentavos = Math.round(precio * 100);
         PaymentIntent intent = stripeService.crearIntentoPago(montoEnCentavos, "pen");
         return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
@@ -99,7 +102,7 @@ public ResponseEntity<?> confirmarPago(@PathVariable Long reservaId, @RequestBod
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
         reserva.setEstado(Reserva.Estado.PAGADO);
-        reservaService.updateReserva(reservaId, reserva);
+        reservaService.actualizarReserva(reservaId, reserva);
 
         return ResponseEntity.ok(Map.of("message", "Pago confirmado y reserva actualizada"));
     } catch (Exception e) {

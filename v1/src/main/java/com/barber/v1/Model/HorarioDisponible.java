@@ -25,6 +25,9 @@ public class HorarioDisponible {
     @Builder.Default
     private boolean reservado = false;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barbero_id")
     private Barbero barbero;

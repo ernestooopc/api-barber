@@ -1,19 +1,14 @@
 package com.barber.v1.Service;
-
 import com.barber.v1.Model.Reserva;
-import com.barber.v1.Model.TipoCorte;
+import com.barber.v1.Model.Servicio;
 import com.barber.v1.Repository.ReservaRepository;
 import com.barber.v1.dto.BoletaData;
 import com.lowagie.text.*;
-import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.draw.LineSeparator;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +21,6 @@ public class BoletaService {
     public byte[] generarBoleta(BoletaData data) throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Document doc = new Document(PageSize.A4, 36, 36, 72, 36);
-        PdfWriter writer = PdfWriter.getInstance(doc, output);
         doc.open();
 
         // -------------------------
@@ -191,7 +185,7 @@ public class BoletaService {
     public BoletaData obtenerDatosBoletaDesdeReserva(Long reservaId) {
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-        TipoCorte tipoCorte = reserva.getTipoCorte();
+        Servicio tipoCorte = reserva.getServicio();
 
         BoletaData data = new BoletaData();
         data.setClienteNombre(reserva.getUsuario().getNombre());

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,31 +27,43 @@ public class ReservaController {
 
     private final ReservaService reservaService;
 
-    @Autowired
     public ReservaController(ReservaService reservaService) {
         this.reservaService = reservaService;
     }
 
     @PostMapping
-    public Reserva createReserva(@RequestBody Reserva reserva) {
-        return reservaService.createReserva(reserva);
+    public ResponseEntity<?> createReserva(@RequestBody Reserva reserva) {
+        try {
+            Reserva nueva = reservaService.crearReserva(reserva);
+            return ResponseEntity.status(201).body(nueva);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Reserva> updateReserva(@PathVariable Long id, @RequestBody Reserva reserva) {
-        Reserva updated = reservaService.updateReserva(id, reserva);
-        return ResponseEntity.ok(updated);
+        try {
+            Reserva updated = reservaService.actualizarReserva(id, reserva);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReserva(@PathVariable Long id) {
-        reservaService.deleteReserva(id);
-        return ResponseEntity.noContent().build();
+        try {
+            reservaService.eliminarReserva(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
     public List<Reserva> listReservas() {
-        return reservaService.listReservas();
+        return reservaService.listarReservas();
     }
 
     @GetMapping("/{id}")
@@ -63,44 +74,46 @@ public class ReservaController {
 
     @GetMapping("/usuario/{usuarioId}")
     public List<Reserva> findByUsuarioId(@PathVariable Long usuarioId) {
-        return reservaService.findByUserId(usuarioId);
+        return reservaService.listarPorUsuarioId(usuarioId);
     }
 
     @GetMapping("/estado/{estado}")
     public List<Reserva> findByEstado(@PathVariable Reserva.Estado estado) {
-        return reservaService.findByStatus(estado);
+        return reservaService.listarPorEstado(estado);
     }
 
     @GetMapping("/entre-fechas")
     public List<Reserva> findBetweenDates(@RequestParam("desde") String desde, @RequestParam("hasta") String hasta) {
         LocalDateTime fechaDesde = LocalDateTime.parse(desde.trim());
         LocalDateTime fechaHasta = LocalDateTime.parse(hasta.trim());
-        return reservaService.findBetweenDates(fechaDesde, fechaHasta);
-    }
-
-    @GetMapping("/existe-en-fecha")
-    public boolean existsByFechaHora(@RequestParam("fechaHora") String fechaHora) {
-        return reservaService.existsReservaAtDate(LocalDateTime.parse(fechaHora));
+        return reservaService.listarEntreFechas(fechaDesde, fechaHasta);
     }
 
     /** PATCH para cambiar sólo el estado */
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Reserva> changeEstado(
+    public ResponseEntity<?> changeEstado(
             @PathVariable Long id,
             @RequestParam("nuevoEstado") Reserva.Estado nuevoEstado) {
-        return reservaService.findById(id)
-                .map(r -> {
-                    r.setEstado(nuevoEstado);
-                    Reserva saved = reservaService.updateReserva(id, r);
-                    return ResponseEntity.ok(saved);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            return reservaService.findById(id)
+                    .map(r -> {
+                        r.setEstado(nuevoEstado);
+                        Reserva saved = reservaService.actualizarReserva(id, r);
+                        return ResponseEntity.ok(saved);
+                    })
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/cancelar")
-    public ResponseEntity<String> cancelarReserva(@PathVariable Long id) {
-        reservaService.cancelarReserva(id);
-        return ResponseEntity.ok("Reserva cancelada exitosamente.");
+    public ResponseEntity<?> cancelarReserva(@PathVariable Long id) {
+        try {
+            reservaService.cancelarReserva(id);
+            return ResponseEntity.ok("Reserva cancelada exitosamente.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
 }

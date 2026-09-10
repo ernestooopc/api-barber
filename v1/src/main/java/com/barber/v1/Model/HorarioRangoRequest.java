@@ -1,15 +1,14 @@
 package com.barber.v1.Model;
 
-import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import lombok.Data;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class HorarioRangoRequest {
     private Long barberoId;
-    private String fecha; // formato YYYY-MM-DD
-    private String inicio; // formato HH:mm
-    private String fin; // formato HH:mm
-    private int intervaloMinutos;
+    private LocalDate fecha;       
+    private LocalTime horaInicio; 
+    private LocalTime horaFin;   
+    private int intervaloMinutos; 
 }

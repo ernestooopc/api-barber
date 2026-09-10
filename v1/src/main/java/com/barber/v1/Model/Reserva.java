@@ -1,8 +1,9 @@
 package com.barber.v1.Model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -18,13 +19,19 @@ public class Reserva {
     private Usuario usuario;
 
     @ManyToOne
-    private TipoCorte tipoCorte;
+    private Servicio servicio;
 
-    @Column(nullable = false)
-    private LocalDateTime fechaHora;
+    @OneToOne
+    @JoinColumn(name = "horario_disponible_id", nullable = false)
+    private HorarioDisponible horarioDisponible;
 
     @Enumerated(EnumType.STRING)
     private Estado estado = Estado.PENDIENTE;
+
+    // Campo indispensable para que BoletaService y los Repositorios funcionen sin errores
+    @Column(name = "fecha_hora", nullable = false)
+    private LocalDateTime fechaHora;
+
 
     //Enumerated ayuda que el estado solo puede ser uno de estos 3
 
